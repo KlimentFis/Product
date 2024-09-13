@@ -24,7 +24,7 @@ from main.views import main
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="OnlineLessons API",
+      title="Brendwall project API",
       default_version='v1',
       description="API documentation for Brendwall project",
       terms_of_service="https://www.google.com/policies/terms/",
