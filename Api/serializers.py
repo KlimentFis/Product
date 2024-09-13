@@ -4,4 +4,7 @@ from main.models import Product
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ('name', 'description', 'price')
+        extra_kwargs = {
+            'id': {'read_only': True}  # id только для чтения
+        }
