@@ -10,17 +10,17 @@
     <title>Товары</title>
     <style>
         body {
-            background-color: #333; /* Темно-серый фон */
-            height: 100vh; /* Высота экрана */
+            background-color: #333;
+            height: 100vh;
         }
         .form-container {
             display: flex;
-            justify-content: center; /* Горизонтальное выравнивание по центру */
-            align-items: center; /* Вертикальное выравнивание по центру */
+            justify-content: center;
+            align-items: center;
             height: 100%;
         }
         .form-box {
-            background-color: #444; /* Более светлый серый для формы */
+            background-color: #444;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -45,7 +45,7 @@
 <body>
     <div class="container form-container">
         <div class="form-box">
-            <form id="productForm" action="javascript:void(0);">
+            <form id="productForm" action="" method="post">
                 <div class="mb-3">
                     <input type="text" class="form-control" id="productName" placeholder="Название" required>
                 </div>
@@ -69,17 +69,89 @@
                     <th>Цена</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Динамическое добавление товаров с использованием Jinja2 -->
-                {% for product in products %}
-                <tr>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.description }}</td>
-                    <td>{{ product.price }}</td>
-                </tr>
-                {% endfor %}
+            <tbody id="productTableBody">
+                <!-- Динамическое добавление товаров -->
             </tbody>
         </table>
     </div>
+
+    <script>
+        // Функция для получения всех товаров и обновления таблицы
+        function loadProducts() {
+            fetch('/api/all_products')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('productTableBody');
+                    tableBody.innerHTML = ''; // Очищаем таблицу перед добавлением новых данных
+
+                    data.forEach(product => {
+                        const newRow = document.createElement('tr');
+
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = product.name;
+                        newRow.appendChild(nameCell);
+
+                        const descriptionCell = document.createElement('td');
+                        descriptionCell.textContent = product.description;
+                        newRow.appendChild(descriptionCell);
+
+                        const priceCell = document.createElement('td');
+                        priceCell.textContent = product.price;
+                        newRow.appendChild(priceCell);
+
+                        tableBody.appendChild(newRow);
+                    });
+                })
+                .catch(error => console.error('Ошибка при загрузке товаров:', error));
+        }
+
+        // Загрузка товаров при загрузке страницы
+        window.onload = loadProducts;
+
+        // Обработчик формы создания товара
+        document.getElementById('productForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Получаем данные из формы
+            const name = document.getElementById('productName').value;
+            const description = document.getElementById('productDescription').value;
+            const price = document.getElementById('productPrice').value;
+
+            // Формируем объект для отправки
+            const productData = {
+                name: name,
+                description: description,
+                price: price
+            };
+
+            // Отправляем данные на сервер с помощью Fetch API
+            fetch('/api/create_product', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'  // Замените на правильный способ получения CSRF-токена
+                },
+                body: JSON.stringify(productData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.name) {
+                    // Очищаем поля формы
+                    document.getElementById('productName').value = '';
+                    document.getElementById('productDescription').value = '';
+                    document.getElementById('productPrice').value = '';
+
+                    // Обновляем таблицу после успешного добавления товара
+                    loadProducts();
+                } else {
+                    alert('Ошибка при создании товара');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отправке данных');
+            });
+        });
+    </script>
 </body>
 </html>

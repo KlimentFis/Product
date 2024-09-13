@@ -24,7 +24,7 @@ def create_product(request):
         # Проверка на пустые поля и отрицательную цену
         if len(name) != 0 and len(description) != 0:
             try:
-                if price >= 0:
+                if int(price) >= 0:
                     serializer = ProductSerializer(data=request.data)
                     if serializer.is_valid():
                         serializer.save()
