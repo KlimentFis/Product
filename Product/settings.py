@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'main',
     'Api',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

@@ -38,3 +38,7 @@ python manage.py runserver
 ```shell
 python manage.py runserver 0.0.0.0:8888
 ```
+
+### Руководство по REST API
+- Swagger: http://127.0.0.1:8000/swagger-docs/
+- ReDoc: http://127.0.0.1:8000/redoc/
